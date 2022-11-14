@@ -13,9 +13,20 @@ import kotlinx.android.synthetic.main.item_article_preview.view.*
 
 class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
 
-    inner class ArticleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ArticleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    private val differCallBack = object : DiffUtil.ItemCallback<Article>() {
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem == newItem
+        }
 
     }
+
+    val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -26,6 +37,8 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
                 .inflate(R.layout.item_article_preview, parent, false)
         )
     }
+
+    var onItemClickListener: ((Article) -> Unit)? = null
 
     override fun onBindViewHolder(holder: NewsAdapter.ArticleViewHolder, position: Int) {
         val article = differ.currentList[position]
@@ -43,8 +56,6 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
         }
     }
 
-    var onItemClickListener: ((Article) -> Unit)? = null
-
     fun setOnClickListener(listener: (Article) -> Unit) {
         onItemClickListener = listener
     }
@@ -52,17 +63,4 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
     override fun getItemCount(): Int {
         return differ.currentList.size
     }
-
-    private val differCallBack = object : DiffUtil.ItemCallback<Article>() {
-        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem == newItem
-        }
-
-    }
-
-    val differ = AsyncListDiffer(this, differCallBack)
 }
