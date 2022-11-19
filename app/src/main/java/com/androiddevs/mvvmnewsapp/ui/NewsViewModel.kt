@@ -3,6 +3,7 @@ package com.androiddevs.mvvmnewsapp.ui
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.androiddevs.mvvmnewsapp.db.models.Article
 import com.androiddevs.mvvmnewsapp.db.models.NewsResponse
 import com.androiddevs.mvvmnewsapp.repository.NewsRepository
 import com.androiddevs.mvvmnewsapp.util.Resource
@@ -16,6 +17,7 @@ class NewsViewModel(val newsRepository: NewsRepository) : ViewModel() {
     private val breakingNewsPage = 1
     val searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     private val searchNewsPage = 1
+    val allArticle: MutableLiveData<Resource<Article>> = MutableLiveData()
 
     init {
         getBreakingNews("in")
@@ -46,11 +48,21 @@ class NewsViewModel(val newsRepository: NewsRepository) : ViewModel() {
     private fun handlingSearchNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
 
         if (response.isSuccessful) {
-            response.body()?.let {searchResponse ->
+            response.body()?.let { searchResponse ->
                 return Resource.Success(searchResponse)
             }
         }
         return Resource.Error(response.message())
+    }
+
+    fun saveArticle(article: Article) = viewModelScope.launch {
+        newsRepository.upsert(article)
+    }
+
+    fun getSavedNews() = newsRepository.getSavedNews()
+
+    fun deleteArticle(article: Article) = viewModelScope.launch {
+        newsRepository.deleteArticle(article)
     }
 
 }
