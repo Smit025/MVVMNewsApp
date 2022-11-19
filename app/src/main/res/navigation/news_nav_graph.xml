@@ -55,5 +55,9 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right"
         tools:layout = "@layout/fragment_article_news"
-        />
+        >
+        <argument
+            android:name="article"
+            app:argType="com.androiddevs.mvvmnewsapp.db.models.Article" />
+    </fragment>
 </navigation>
